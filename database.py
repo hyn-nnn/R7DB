@@ -128,8 +128,9 @@ def get_task_categories(task_id):
     conn.close()
     return categories
 
-def list_tasks(show_completed=False, category=None):
-    """タスク一覧を取得。categoryを指定するとそのカテゴリのタスクのみ返す。"""
+def list_tasks(show_completed=False, category=None, sort_by_due_date=False):
+    """タスク一覧を取得。categoryを指定するとそのカテゴリのタスクのみ返す。
+    sort_by_due_dateがTrueなら期限が近い順、Falseならid順。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -149,7 +150,11 @@ def list_tasks(show_completed=False, category=None):
     if conditions:
         sql += ' WHERE ' + ' AND '.join(conditions)
 
-    sql += ' ORDER BY t.id'
+    # 期限順またはID順で並び替え
+    if sort_by_due_date:
+        sql += ' ORDER BY t.due_date IS NULL, t.due_date, t.id'
+    else:
+        sql += ' ORDER BY t.id'
 
     cursor.execute(sql, params)
     tasks = cursor.fetchall()

@@ -32,8 +32,11 @@ def list_tasks_menu():
     # カテゴリで絞る（空なら全表示）
     category_input = input("カテゴリで絞りますか？ カテゴリ名を入力（空で全表示）: ").strip()
     category = category_input if category_input else None
+    # 並び替え方法を選択
+    sort_choice = input("並び替え方法：1) ID順（デフォルト）2) 期限が近い順: ").strip()
+    sort_by_due_date = sort_choice == '2'
 
-    tasks = db.list_tasks(show_completed=show_all, category=category)
+    tasks = db.list_tasks(show_completed=show_all, category=category, sort_by_due_date=sort_by_due_date)
     if not tasks:
         print("タスクがありません")
         return

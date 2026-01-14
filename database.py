@@ -59,24 +59,33 @@ def init_database():
     conn.commit()
     conn.close()
 
-def get_or_create_category(category_name):
-    """カテゴリを取得または作成"""
-    conn = get_connection()
+def get_or_create_category(category_name, conn=None):
+    """カテゴリを取得または作成。
+    既存の接続を渡せば同一トランザクション内で動作する（コミットは呼び出し側が行う）。
+    """
+    own_conn = False
+    if conn is None:
+        conn = get_connection()
+        own_conn = True
+
     cursor = conn.cursor()
-    
+
     # 既存のカテゴリを検索
     cursor.execute('SELECT id FROM categories WHERE name = ?', (category_name,))
     result = cursor.fetchone()
-    
+
     if result:
         category_id = result['id']
     else:
         # 新規作成
         cursor.execute('INSERT INTO categories (name) VALUES (?)', (category_name,))
         category_id = cursor.lastrowid
-        conn.commit()
-    
-    conn.close()
+        if own_conn:
+            conn.commit()
+
+    if own_conn:
+        conn.close()
+
     return category_id
 
 def add_task(name, description='', due_date='', categories=None):
@@ -95,7 +104,7 @@ def add_task(name, description='', due_date='', categories=None):
     if categories:
         for cat_name in categories:
             if cat_name.strip():  # 空文字列は除外
-                cat_id = get_or_create_category(cat_name.strip())
+                cat_id = get_or_create_category(cat_name.strip(), conn=conn)
                 cursor.execute('''
                     INSERT INTO task_categories (task_id, category_id)
                     VALUES (?, ?)

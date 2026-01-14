@@ -128,16 +128,30 @@ def get_task_categories(task_id):
     conn.close()
     return categories
 
-def list_tasks(show_completed=False):
-    """タスク一覧を取得"""
+def list_tasks(show_completed=False, category=None):
+    """タスク一覧を取得。categoryを指定するとそのカテゴリのタスクのみ返す。"""
     conn = get_connection()
     cursor = conn.cursor()
-    
-    if show_completed:
-        cursor.execute('SELECT * FROM tasks ORDER BY id')
-    else:
-        cursor.execute('SELECT * FROM tasks WHERE completed = 0 ORDER BY id')
-    
+
+    params = []
+    sql = 'SELECT t.* FROM tasks t'
+
+    if category:
+        sql += ' JOIN task_categories tc ON t.id = tc.task_id JOIN categories c ON tc.category_id = c.id'
+
+    conditions = []
+    if not show_completed:
+        conditions.append('t.completed = 0')
+    if category:
+        conditions.append('c.name = ?')
+        params.append(category)
+
+    if conditions:
+        sql += ' WHERE ' + ' AND '.join(conditions)
+
+    sql += ' ORDER BY t.id'
+
+    cursor.execute(sql, params)
     tasks = cursor.fetchall()
     conn.close()
     return tasks

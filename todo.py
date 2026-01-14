@@ -29,8 +29,11 @@ def list_tasks_menu():
     """タスク一覧表示メニュー"""
     print("\n[タスク一覧]")
     show_all = input("完了済みも表示しますか？ (y/n): ").lower() == 'y'
-    
-    tasks = db.list_tasks(show_completed=show_all)
+    # カテゴリで絞る（空なら全表示）
+    category_input = input("カテゴリで絞りますか？ カテゴリ名を入力（空で全表示）: ").strip()
+    category = category_input if category_input else None
+
+    tasks = db.list_tasks(show_completed=show_all, category=category)
     if not tasks:
         print("タスクがありません")
         return

@@ -16,8 +16,8 @@ def add_task_menu():
     print("\n[タスク登録]")
     name = input("タスク名: ")
     description = input("詳細（任意）: ")
-    due_date = input("期日（YYYY-MM-DD，任意）: ")
-    categories_input = input("カテゴリ（カンマ区切り，任意）: ")
+    due_date = input("期日（YYYY-MM-DD, 任意）: ")
+    categories_input = input("カテゴリ（カンマ区切り, 任意）: ")
     
     # カテゴリをリストに変換
     categories = [c.strip() for c in categories_input.split(',')] if categories_input else []

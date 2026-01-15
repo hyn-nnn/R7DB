@@ -26,7 +26,7 @@ def init_database():
         )
     ''')
     
-    # categoriesテーブル（新規）
+    # categoriesテーブル
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,7 +34,7 @@ def init_database():
         )
     ''')
     
-    # task_categoriesテーブル（中間テーブル，新規）
+    # task_categoriesテーブル（中間テーブル）
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS task_categories (
             task_id INTEGER NOT NULL,
@@ -230,7 +230,7 @@ def get_completion_rate():
     return (completed / total) * 100
 
 def get_category_stats():
-    """カテゴリ別の累計時間を取得（追加機能）"""
+    """カテゴリ別の累計時間を取得"""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
